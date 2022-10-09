@@ -96,7 +96,6 @@ Create a new dataframe based on `df_ps_raw` that contains only the following col
 
 # ╔═╡ 9105b929-ad4b-48f7-b234-2bab6f3bd524
 response_1a =  missing
-#df_ps_raw[!,[:pl_name,:pl_orbper,:pl_rade,:ttv_flag,:sy_pnum,:disc_facility]]
 
 # ╔═╡ 525c5db3-7e7e-466c-a2b8-1b6d40d5bd64
 md"""
@@ -150,7 +149,7 @@ md"""
 """
 
 # ╔═╡ 58aba1d9-5605-4dc7-a613-ffe587a723d0
-df_ps_w_rm = missing # filter(row->!ismissing(row.pl_projobliq), df_ps)  # Replace with your code
+df_ps_w_rm = missing 
 
 # ╔═╡ fc4a26b6-1325-47ac-9aa8-949343723eff
 md"""
@@ -158,8 +157,7 @@ md"""
 """
 
 # ╔═╡ 1e81f5ee-5a7e-4777-8f17-b4cc7554b467
-df_ps_hatns_w_rm = missing # Replace with your code 
-#filter(row->(row.disc_facility=="HATNet" || row.disc_facility=="HATSouth") && !ismissing(row.pl_projobliq), df_ps)
+df_ps_hatns_w_rm = missing
 
 # ╔═╡ f21b46ad-a293-486b-bafd-24245a3d1511
 md"""
@@ -189,6 +187,11 @@ md"""
 **Q2a:** Query the exoplanet archive to retrieve all the rows that contain a 
 numerical value for `pl_projobliq` and were detected by either the original HATNet (in the northern hemispehre) or HATSouth.  Retrieve only the columns contained in `cols_to_keep`.  Store the result in a dataframe named `df_pl_hatns_w_rm`.
 """
+
+# ╔═╡ 183cffd3-db02-4ba9-86bf-5af28d84cd3b
+begin  # replace with your code
+	df_pl_hatns_w_rm = missing 
+end
 
 # ╔═╡ 4e065419-b812-42af-a48e-830ac222be87
 md"""
@@ -236,6 +239,11 @@ end
 md"""
 **Q3b:** Use a filter and a join to find the Kepler id number for any planets discovered by the TrES survey (`disc_facility` equals "TrES").  Store the resulting vector of integers in the variable `response_3b`.
 """
+
+# ╔═╡ 773bd2c2-8276-462c-ac4f-219624101743
+begin
+	response_3b = missing
+end
 
 # ╔═╡ 19fc6a33-c0aa-4a14-b666-365e943e5c30
 md"""
@@ -672,14 +680,6 @@ begin
 	DataFrame(map(s->(;dataframe=s, num_rows=size(eval(s),1), num_cols=size(eval(s),2)),[:df_ps_hat,:df_kepler_names,:df_ps_hat_and_kepler_inner,:df_ps_hat_and_kepler_left,:df_ps_hat_and_kepler_right,:df_ps_hat_and_kepler_outer]))
 end
 
-# ╔═╡ 773bd2c2-8276-462c-ac4f-219624101743
-begin
-	response_3b = innerjoin(
-		filter(row->row.disc_facility=="TrES", df_ps)
-		,df_kepler_names,
-		on=:pl_name).kepid # missing
-end
-
 # ╔═╡ a91fc636-644c-4860-9f28-2cd2f03a59af
 begin
 	response_3b_ref = innerjoin(
@@ -705,7 +705,9 @@ if do_gaia_queries
 end
 
 # ╔═╡ 55945bef-de16-4917-92f9-65422915c188
-df_gaia_near[!,[:designation,:ang_sep,:phot_g_mean_mag]]
+if do_gaia_queries
+	df_gaia_near[!,[:designation,:ang_sep,:phot_g_mean_mag]]
+end
 
 # ╔═╡ 21eb8fa1-288b-424d-bf63-ff0fcb366735
 """`replace_spaces_for_tap(str)`
@@ -736,10 +738,12 @@ if do_gaia_queries
 end
 
 # ╔═╡ 02c978d9-3bd0-4286-ad7b-e619789ec50f
-Markdown.parse("""
+if do_gaia_queries
+	Markdown.parse("""
 We can compare the parallax (and it's uncertainty) from DR2 ($(df_gaiadr2_hat7.parallax[1]) ±$(df_gaiadr2_hat7.parallax_error[1])) to the newer values from DR3 ($(df_gaiadr3_hat7.parallax[1]) ±$(df_gaiadr3_hat7.parallax_error[1])). 
 If we were doing a detailed scientifc analysis, we might want to update the stellar properties based on the improved parallax.
 """)
+end
 
 # ╔═╡ fff96331-a2ad-4243-8acc-2c869ff89633
 begin
@@ -768,16 +772,6 @@ df_pl_w_rm = query_to_df(url_get_pl_w_rm_from_ps_table)
 # ╔═╡ 67ea55f3-391a-42a9-8735-7420fe75a16f
 let
 	plt = scatter(df_pl_w_rm.pl_orbper,df_pl_w_rm.pl_projobliq, label=:none, xlabel="Period (d)", ylabel = "λ (degrees)", xscale=:log10)
-end
-
-# ╔═╡ 183cffd3-db02-4ba9-86bf-5af28d84cd3b
-begin  # replace with your code
-	url_get_hatns_w_rm = make_tap_query_url(
-		nexsci_query_base_url, planeary_systems_table, 
-		select_cols= select_cols_for_tap(cols_to_keep), 
-		where="(disc_facility='HATNet'+or+disc_facility='HATSouth')+and+pl_projobliq+is+not+null")
-	df_pl_hatns_w_rm = query_to_df(url_get_hatns_w_rm)
-	#df_pl_hatns_w_rm = missing 
 end
 
 # ╔═╡ 39f6a723-8295-45dd-9940-32bf3db9d035
@@ -993,9 +987,8 @@ StatsBase = "~0.33.21"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.8.2"
+julia_version = "1.7.3"
 manifest_format = "2.0"
-project_hash = "c5aaef5df0f9a4bacfbdf2435197452ccba6ef49"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -1011,7 +1004,6 @@ version = "3.4.0"
 
 [[deps.ArgTools]]
 uuid = "0dad84c5-d112-42e6-8d28-ef12dabb789f"
-version = "1.1.1"
 
 [[deps.Artifacts]]
 uuid = "56f22d72-fd6d-98f1-02f0-08ddc0907c33"
@@ -1099,7 +1091,6 @@ version = "4.2.0"
 [[deps.CompilerSupportLibraries_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
-version = "0.5.2+0"
 
 [[deps.Contour]]
 git-tree-sha1 = "d05d9e7b7aedff4e5b51a029dced05cfb6125781"
@@ -1112,9 +1103,9 @@ uuid = "a8cc5b0e-0ffa-5ad4-8c14-923d3ee1735f"
 version = "4.1.1"
 
 [[deps.DataAPI]]
-git-tree-sha1 = "1106fa7e1256b402a86a8e7b15c00c85036fef49"
+git-tree-sha1 = "46d2680e618f8abd007bce0c3026cb0c4a8f2032"
 uuid = "9a962f9c-6df0-11e9-0e5d-c546b8b5ee8a"
-version = "1.11.0"
+version = "1.12.0"
 
 [[deps.DataFrames]]
 deps = ["Compat", "DataAPI", "Future", "InvertedIndices", "IteratorInterfaceExtensions", "LinearAlgebra", "Markdown", "Missings", "PooledArrays", "PrettyTables", "Printf", "REPL", "Reexport", "SortingAlgorithms", "Statistics", "TableTraits", "Tables", "Unicode"]
@@ -1160,7 +1151,6 @@ version = "0.9.1"
 [[deps.Downloads]]
 deps = ["ArgTools", "FileWatching", "LibCURL", "NetworkOptions"]
 uuid = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
-version = "1.6.0"
 
 [[deps.EarCut_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
@@ -1420,12 +1410,10 @@ version = "0.15.17"
 [[deps.LibCURL]]
 deps = ["LibCURL_jll", "MozillaCACerts_jll"]
 uuid = "b27032c2-a3e7-50c8-80cd-2d36dbcbfd21"
-version = "0.6.3"
 
 [[deps.LibCURL_jll]]
 deps = ["Artifacts", "LibSSH2_jll", "Libdl", "MbedTLS_jll", "Zlib_jll", "nghttp2_jll"]
 uuid = "deac9b47-8bc7-5906-a0fe-35ac56dc84c0"
-version = "7.84.0+0"
 
 [[deps.LibGit2]]
 deps = ["Base64", "NetworkOptions", "Printf", "SHA"]
@@ -1434,7 +1422,6 @@ uuid = "76f85450-5226-5b5a-8eaa-529ad045b433"
 [[deps.LibSSH2_jll]]
 deps = ["Artifacts", "Libdl", "MbedTLS_jll"]
 uuid = "29816b5a-b9ab-546f-933c-edad1886dfa8"
-version = "1.10.2+0"
 
 [[deps.Libdl]]
 uuid = "8f399da3-3557-5675-b5ff-fb832c97cbdb"
@@ -1531,7 +1518,6 @@ version = "1.1.6"
 [[deps.MbedTLS_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "c8ffd9c3-330d-5841-b78e-0817d7145fa1"
-version = "2.28.0+0"
 
 [[deps.Measures]]
 git-tree-sha1 = "e498ddeee6f9fdb4551ce855a46f54dbd900245f"
@@ -1549,7 +1535,6 @@ uuid = "a63ad114-7e13-5084-954f-fe012c677804"
 
 [[deps.MozillaCACerts_jll]]
 uuid = "14a3606d-f60d-562e-9121-12d972cd8159"
-version = "2022.2.1"
 
 [[deps.NaNMath]]
 deps = ["OpenLibm_jll"]
@@ -1559,7 +1544,6 @@ version = "1.0.1"
 
 [[deps.NetworkOptions]]
 uuid = "ca575930-c2e3-43a9-ace4-1e988b2c1908"
-version = "1.2.0"
 
 [[deps.Ogg_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
@@ -1570,12 +1554,10 @@ version = "1.3.5+1"
 [[deps.OpenBLAS_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "Libdl"]
 uuid = "4536629a-c528-5b80-bd46-f80d51c5b363"
-version = "0.3.20+0"
 
 [[deps.OpenLibm_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "05823500-19ac-5b8b-9628-191a04bc5112"
-version = "0.8.1+0"
 
 [[deps.OpenSSL]]
 deps = ["BitFlags", "Dates", "MozillaCACerts_jll", "OpenSSL_jll", "Sockets"]
@@ -1609,7 +1591,6 @@ version = "1.4.1"
 [[deps.PCRE2_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "efcefdf7-47ab-520b-bdef-62a2eaa19f15"
-version = "10.40.0+0"
 
 [[deps.Parsers]]
 deps = ["Dates"]
@@ -1626,7 +1607,6 @@ version = "0.40.1+0"
 [[deps.Pkg]]
 deps = ["Artifacts", "Dates", "Downloads", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "REPL", "Random", "SHA", "Serialization", "TOML", "Tar", "UUIDs", "p7zip_jll"]
 uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
-version = "1.8.0"
 
 [[deps.PlotThemes]]
 deps = ["PlotUtils", "Statistics"]
@@ -1761,7 +1741,6 @@ version = "3.4.0"
 
 [[deps.SHA]]
 uuid = "ea8e919c-243c-51af-8825-aaa63cd721ce"
-version = "0.7.0"
 
 [[deps.Scratch]]
 deps = ["Dates"]
@@ -1849,7 +1828,6 @@ version = "0.6.12"
 [[deps.TOML]]
 deps = ["Dates"]
 uuid = "fa267f1f-6049-4f14-aa54-33bafae1ed76"
-version = "1.0.0"
 
 [[deps.TableShowUtils]]
 deps = ["DataValues", "Dates", "JSON", "Markdown", "Test"]
@@ -1878,7 +1856,6 @@ version = "1.9.0"
 [[deps.Tar]]
 deps = ["ArgTools", "SHA"]
 uuid = "a4e569a6-e804-4fa4-b0f3-eef7a1d5b13e"
-version = "1.10.1"
 
 [[deps.TensorCore]]
 deps = ["LinearAlgebra"]
@@ -2083,7 +2060,6 @@ version = "1.4.0+3"
 [[deps.Zlib_jll]]
 deps = ["Libdl"]
 uuid = "83775a58-1f1d-513f-b197-d71354ab007a"
-version = "1.2.12+3"
 
 [[deps.Zstd_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
@@ -2106,7 +2082,6 @@ version = "0.15.1+0"
 [[deps.libblastrampoline_jll]]
 deps = ["Artifacts", "Libdl", "OpenBLAS_jll"]
 uuid = "8e850b90-86db-534c-a0d3-1478176c7d93"
-version = "5.1.1+0"
 
 [[deps.libfdk_aac_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
@@ -2129,12 +2104,10 @@ version = "1.3.7+1"
 [[deps.nghttp2_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "8e850ede-7688-5339-a07c-302acd2aaf8d"
-version = "1.48.0+0"
 
 [[deps.p7zip_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "3f19e933-33d8-53b3-aaab-bd5110c3b7a0"
-version = "17.4.0+0"
 
 [[deps.x264_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
