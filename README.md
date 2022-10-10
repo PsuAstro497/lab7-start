@@ -14,12 +14,17 @@
 In this lab, students will learn to:
 - Write queries using ADQL and TAP
 - Access tables with results of queries
-- Download datafiles from a major astronomical archives
+- Wrange data in DataFrames using select, filter, join, groupby & transform
+- Download datafiles from a major astronomical archives via astroquery
 - Access data from FITS files
-- Manipulate DataFrames including select, filter, transform, groupby & transform
+- Perform Box-Least Squares (BLS) periodogram
+- Call functions from python packages in Julia
+- Apply low-pass filter to light curve (optional)
 
 Students will strengthen their understanding of:
 - Rossiter-McLaughlin observations
+- Pre-processing of photometric time series to identify transiting planet candidates
+- Working with multiple languages
 
 ## Logistics
 Follow the link provided via Canvas to create your own private copy of this lab's repository on GitHub.com.   
