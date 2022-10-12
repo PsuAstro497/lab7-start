@@ -1,6 +1,12 @@
 ### A Pluto.jl notebook ###
 # v0.19.12
 
+#> [frontmatter]
+#> title = "Downloading Data with Astroquery"
+#> date = "2022-10-12"
+#> tags = ["astro497", "astroquery"]
+#> description = "Astro 497: Lab 7, Ex 2"
+
 using Markdown
 using InteractiveUtils
 
@@ -80,11 +86,14 @@ There are many optional arguements you could pass.  To see them all, we can run
 # ╔═╡ 0d7d2531-0211-4ece-81b9-0935b3431974
 Observations.get_metadata("observations")
 
-# ╔═╡ 78aae36a-57f1-4203-98c0-3a0b8af4ce43
+# ╔═╡ 6f176626-fcdb-4643-9dde-f000d3eb912c
 md"""
 The query returned two rows, one for long cadence (LC) observations (1800s integration times) and one for short cadence (SC) observations (60s integration time).  
 In this lab, we'll focus on just the long cadence observations.
+"""
 
+# ╔═╡ 7ce53194-fd12-408d-8db7-69fb8f3c2349
+md"""
 Next, we can request a list of all data files that are available for the long cadence observations, using `get_product_list`.
 """
 
@@ -329,8 +338,11 @@ df_ps_hat_and_kepler[!, [:kepler_name,:kepid] ]
 obs_table = Observations.query_criteria(obs_collection=["Kepler"],
                                         objectname=df_ps_hat_and_kepler.kepid[1], radius=0)
 
+# ╔═╡ e4616064-9966-4c4e-9a80-572b50cb770d
+row_with_lc = findfirst(x->x==1800.0,collect(obs_table.to_pandas().t_exptime))
+
 # ╔═╡ 24ad88d7-d781-4c2d-83af-6aa4f4fdb72a
-products = Observations.get_product_list(obs_table[1])
+products = Observations.get_product_list(obs_table[row_with_lc])
 
 # ╔═╡ 39e8d292-aa81-4ddc-9d40-7a30ba14797c
 lc_products = Observations.filter_products(products, description="Lightcurve Long Cadence (CLC) - Q4")
@@ -405,8 +417,9 @@ Query = "~1.0.0"
 PLUTO_MANIFEST_TOML_CONTENTS = """
 # This file is machine-generated - editing it directly is not advised
 
-julia_version = "1.7.3"
+julia_version = "1.8.2"
 manifest_format = "2.0"
+project_hash = "31485006d1670f77f281e5f103ae6f2f43075f17"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -416,6 +429,7 @@ version = "1.1.4"
 
 [[deps.ArgTools]]
 uuid = "0dad84c5-d112-42e6-8d28-ef12dabb789f"
+version = "1.1.1"
 
 [[deps.Artifacts]]
 uuid = "56f22d72-fd6d-98f1-02f0-08ddc0907c33"
@@ -515,6 +529,7 @@ version = "4.2.0"
 [[deps.CompilerSupportLibraries_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "e66e0078-7015-5450-92f7-15fbd957f2ae"
+version = "0.5.2+0"
 
 [[deps.Conda]]
 deps = ["Downloads", "JSON", "VersionParsing"]
@@ -581,6 +596,7 @@ version = "0.9.1"
 [[deps.Downloads]]
 deps = ["ArgTools", "FileWatching", "LibCURL", "NetworkOptions"]
 uuid = "f43a241f-c20a-4ad4-852c-f6b1247861c6"
+version = "1.6.0"
 
 [[deps.Expat_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
@@ -824,10 +840,12 @@ version = "0.15.17"
 [[deps.LibCURL]]
 deps = ["LibCURL_jll", "MozillaCACerts_jll"]
 uuid = "b27032c2-a3e7-50c8-80cd-2d36dbcbfd21"
+version = "0.6.3"
 
 [[deps.LibCURL_jll]]
 deps = ["Artifacts", "LibSSH2_jll", "Libdl", "MbedTLS_jll", "Zlib_jll", "nghttp2_jll"]
 uuid = "deac9b47-8bc7-5906-a0fe-35ac56dc84c0"
+version = "7.84.0+0"
 
 [[deps.LibGit2]]
 deps = ["Base64", "NetworkOptions", "Printf", "SHA"]
@@ -836,6 +854,7 @@ uuid = "76f85450-5226-5b5a-8eaa-529ad045b433"
 [[deps.LibSSH2_jll]]
 deps = ["Artifacts", "Libdl", "MbedTLS_jll"]
 uuid = "29816b5a-b9ab-546f-933c-edad1886dfa8"
+version = "1.10.2+0"
 
 [[deps.Libdl]]
 uuid = "8f399da3-3557-5675-b5ff-fb832c97cbdb"
@@ -932,6 +951,7 @@ version = "1.1.6"
 [[deps.MbedTLS_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "c8ffd9c3-330d-5841-b78e-0817d7145fa1"
+version = "2.28.0+0"
 
 [[deps.Measures]]
 git-tree-sha1 = "e498ddeee6f9fdb4551ce855a46f54dbd900245f"
@@ -949,6 +969,7 @@ uuid = "a63ad114-7e13-5084-954f-fe012c677804"
 
 [[deps.MozillaCACerts_jll]]
 uuid = "14a3606d-f60d-562e-9121-12d972cd8159"
+version = "2022.2.1"
 
 [[deps.NaNMath]]
 deps = ["OpenLibm_jll"]
@@ -958,6 +979,7 @@ version = "1.0.1"
 
 [[deps.NetworkOptions]]
 uuid = "ca575930-c2e3-43a9-ace4-1e988b2c1908"
+version = "1.2.0"
 
 [[deps.Ogg_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
@@ -968,10 +990,12 @@ version = "1.3.5+1"
 [[deps.OpenBLAS_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "Libdl"]
 uuid = "4536629a-c528-5b80-bd46-f80d51c5b363"
+version = "0.3.20+0"
 
 [[deps.OpenLibm_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "05823500-19ac-5b8b-9628-191a04bc5112"
+version = "0.8.1+0"
 
 [[deps.OpenSSL]]
 deps = ["BitFlags", "Dates", "MozillaCACerts_jll", "OpenSSL_jll", "Sockets"]
@@ -1005,6 +1029,7 @@ version = "1.4.1"
 [[deps.PCRE2_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "efcefdf7-47ab-520b-bdef-62a2eaa19f15"
+version = "10.40.0+0"
 
 [[deps.Parsers]]
 deps = ["Dates"]
@@ -1026,6 +1051,7 @@ version = "0.40.1+0"
 [[deps.Pkg]]
 deps = ["Artifacts", "Dates", "Downloads", "LibGit2", "Libdl", "Logging", "Markdown", "Printf", "REPL", "Random", "SHA", "Serialization", "TOML", "Tar", "UUIDs", "p7zip_jll"]
 uuid = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
+version = "1.8.0"
 
 [[deps.PlotThemes]]
 deps = ["PlotUtils", "Statistics"]
@@ -1166,6 +1192,7 @@ version = "3.4.0"
 
 [[deps.SHA]]
 uuid = "ea8e919c-243c-51af-8825-aaa63cd721ce"
+version = "0.7.0"
 
 [[deps.Scratch]]
 deps = ["Dates"]
@@ -1236,6 +1263,7 @@ version = "0.33.21"
 [[deps.TOML]]
 deps = ["Dates"]
 uuid = "fa267f1f-6049-4f14-aa54-33bafae1ed76"
+version = "1.0.0"
 
 [[deps.TableShowUtils]]
 deps = ["DataValues", "Dates", "JSON", "Markdown", "Test"]
@@ -1264,6 +1292,7 @@ version = "1.9.0"
 [[deps.Tar]]
 deps = ["ArgTools", "SHA"]
 uuid = "a4e569a6-e804-4fa4-b0f3-eef7a1d5b13e"
+version = "1.10.1"
 
 [[deps.TensorCore]]
 deps = ["LinearAlgebra"]
@@ -1473,6 +1502,7 @@ version = "1.4.0+3"
 [[deps.Zlib_jll]]
 deps = ["Libdl"]
 uuid = "83775a58-1f1d-513f-b197-d71354ab007a"
+version = "1.2.12+3"
 
 [[deps.Zstd_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
@@ -1501,6 +1531,7 @@ version = "0.15.1+0"
 [[deps.libblastrampoline_jll]]
 deps = ["Artifacts", "Libdl", "OpenBLAS_jll"]
 uuid = "8e850b90-86db-534c-a0d3-1478176c7d93"
+version = "5.1.1+0"
 
 [[deps.libfdk_aac_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
@@ -1523,10 +1554,12 @@ version = "1.3.7+1"
 [[deps.nghttp2_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "8e850ede-7688-5339-a07c-302acd2aaf8d"
+version = "1.48.0+0"
 
 [[deps.p7zip_jll]]
 deps = ["Artifacts", "Libdl"]
 uuid = "3f19e933-33d8-53b3-aaab-bd5110c3b7a0"
+version = "17.4.0+0"
 
 [[deps.x264_jll]]
 deps = ["Artifacts", "JLLWrappers", "Libdl", "Pkg"]
@@ -1565,7 +1598,9 @@ version = "1.4.1+0"
 # ╟─8d38cac8-3594-4a6d-a22d-e505a233eb3e
 # ╟─fa55e6a8-980a-43f7-89a8-dd6bc21a1755
 # ╠═0d7d2531-0211-4ece-81b9-0935b3431974
-# ╟─78aae36a-57f1-4203-98c0-3a0b8af4ce43
+# ╟─6f176626-fcdb-4643-9dde-f000d3eb912c
+# ╠═e4616064-9966-4c4e-9a80-572b50cb770d
+# ╟─7ce53194-fd12-408d-8db7-69fb8f3c2349
 # ╠═24ad88d7-d781-4c2d-83af-6aa4f4fdb72a
 # ╟─46e62dc7-5233-4bc3-b61b-ffa7888e3032
 # ╠═39e8d292-aa81-4ddc-9d40-7a30ba14797c
@@ -1622,6 +1657,6 @@ version = "1.4.1+0"
 # ╟─fd4ce157-a317-485a-b9a9-64b28dd7e522
 # ╠═21eb8fa1-288b-424d-bf63-ff0fcb366735
 # ╟─afb9dd8e-d72a-4fea-8991-b77062d2c732
-# ╠═6bc2a24b-92c5-490d-895e-2c3eabfc3db7
+# ╟─6bc2a24b-92c5-490d-895e-2c3eabfc3db7
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
