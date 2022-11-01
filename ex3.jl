@@ -376,7 +376,7 @@ period_guess = first(bls_periodogram.period_at_max_power)
 
 # ╔═╡ 18ce77c4-40c2-4964-87d7-cd495db12bdf
 md"""
-We can make a similar blox of the light curve folded at the putative orbital period.
+We can make a similar plot of the light curve folded at the putative orbital period.
 """
 
 # ╔═╡ f3a2d7b6-02c3-4b4e-a95d-c74653d52883
@@ -411,15 +411,14 @@ md"""
 """
 
 # ╔═╡ d08df8bd-b2fd-43d9-a4f7-33198d3dc7a0
-response_1a = missing
-#=
+response_1a = 
 md"""
-1. Issue 1
-2. Issue 2
-3. Issue 3
-4. Issue 4
+1. The data being fit differs slightly, because we excluded points flagged as having low data quality in the Julia analysis, but not using Lightkurve.
+2. Our model of the out-of-transit flux (that we used for detrending) is slightly different from the model used by lightkurve to detrend the fluxes.
+3. Since we don't specify the grid of putative orbital periods and phase to be searched by the two packages, they are likely using slightly different grids in their searches.
+4. **Most importantly, but not so obvious...** Because the best-fit orbital period is nearly a multiple of the exposure time, the duration of observations is relatively short, and we're using a box model for transits, one could make very small changes in the orbital period (or phase) and the predictions for which points are in transit (and hence the predictions for the flux at each time) are *exactly* the same.  When the predictions of two models are exactly the same, the gradient of our log likelihood is zero and optimizers can reasonably terminate their search at different best-fit values.
+5. (Not an actual reason, but a reasonable guess that students can get full credit for:)  You might wonder if the grid of putative transit durations searched differs.  But I checked what lightkurve was using and set our durations to be searched to match theirs.
 """
-=#
 
 # ╔═╡ a5a582eb-b3ea-41a4-b48e-7c2d40e315d2
 if ismissing(response_1a)  still_missing()  end
@@ -446,13 +445,11 @@ md"""
 """
 
 # ╔═╡ 4e33a464-c58a-4b1e-8061-e9d2a343b798
-response_2a = missing
-#=
-md"""
-1. Issue 1
-2. Issue 2
+response_2a = md"""
+1. There are a couple additional outliers in the lightkurve figure.
+2.  The x-coordinates of points in the folded light curve (the orbital phase for the assumed orbital period) are more highly clumped in the plot with the Julia analysis.  
 """
-=#
+
 
 # ╔═╡ 5f65dc6c-8652-42cb-b9ce-b3e6079d51b5
 if ismissing(response_2a)  still_missing()  end
@@ -463,13 +460,11 @@ md"""
 """
 
 # ╔═╡ 03a7647d-bb57-43d6-8a00-1a6abea1b461
-response_2b = missing
-#=
-md"""
-1. Issue 1
-2. Issue 2
+response_2b = md"""
+1.  In our Julia-based analysis, we removed points that had been flagged as low data quality.  Lightkurve doesn't do that (at least not by default).  Unsurprisingly, some points with low data quality show larger residuals than is typical of the points with no known data quality issues.
+2.  The best-fit orbital period from the Julia analysis is very nearly a multiple of the exposure time, where the best-fit orbital period from lightkurve is differs from a multiple of the exposure time slightly more.  
 """
-=#
+
 
 # ╔═╡ 3212122e-9d06-4569-9cac-6e035eb1ff93
 if ismissing(response_2b)  still_missing()  end
@@ -1883,7 +1878,7 @@ version = "1.4.1+0"
 # ╠═d08df8bd-b2fd-43d9-a4f7-33198d3dc7a0
 # ╟─a5a582eb-b3ea-41a4-b48e-7c2d40e315d2
 # ╟─98eaca66-21ff-4c4b-a3e4-fd3f0c273c39
-# ╠═19746dcf-09cc-4d68-a1f2-fc6b4d311b5d
+# ╟─19746dcf-09cc-4d68-a1f2-fc6b4d311b5d
 # ╟─18cec6ef-62c9-4fac-b401-e477ffc9748d
 # ╟─f5f73578-bad3-4a49-97c1-f959a4001206
 # ╟─a5156de5-2047-47ff-b934-dbb669f45cba

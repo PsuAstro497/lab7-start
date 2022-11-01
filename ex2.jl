@@ -175,7 +175,10 @@ Compare the resulting plots.  What's the biggest difference between the two type
 """
 
 # ╔═╡ e693980d-6219-4e06-adad-4db2440a990a
-responce_1b = missing
+responce_1b = 
+	md"""For the SAP flux, the out-of-transit flux shows a gradual downward trend.  
+	
+	For the PDCSAP fluxes, the out-of-transit flux is more nearly constant and has a smaller range."""  
 
 # ╔═╡ e576d02d-5e9e-4dc9-baf0-12ba174f89c5
 if ismissing(responce_1b) still_missing() end
@@ -336,7 +339,7 @@ df_ps_hat_and_kepler[!, [:kepler_name,:kepid] ]
 
 # ╔═╡ 3f673b81-8f4d-4d84-8662-cedbf6b35959
 obs_table = Observations.query_criteria(obs_collection=["Kepler"],
-                                        objectname=df_ps_hat_and_kepler.kepid[1], radius=0)
+                                        objectname=df_ps_hat_and_kepler.kepid[2], radius=0)
 
 # ╔═╡ e4616064-9966-4c4e-9a80-572b50cb770d
 row_with_lc = findfirst(x->x==1800.0,collect(obs_table.to_pandas().t_exptime))
@@ -372,10 +375,10 @@ fits["LIGHTCURVE"]
 time = read(fits[2],"TIME")
 
 # ╔═╡ c235af9f-791f-4ddf-9723-1c4ab8b7f4e3
-flux = read(fits[2],"SAP_FLUX")
+flux = read(fits[2],"PDCSAP_FLUX")
 
 # ╔═╡ 6983d5ce-84da-4f32-961e-27275e5b6bd4
-flux_err = read(fits[2],"SAP_FLUX_ERR")
+flux_err = read(fits[2],"PDCSAP_FLUX_ERR")
 
 # ╔═╡ c3b61405-8f2d-4b2d-ab0d-912ee3060d60
 scatter(time,flux,yerr=flux_err,markersize=0, label=:none)
